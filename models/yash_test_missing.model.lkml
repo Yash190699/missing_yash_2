@@ -8,7 +8,7 @@ datagroup: yash_test_missing_default_datagroup {
   max_cache_age: "1 hour"
 }
 datagroup: my_scheduled_weekly_start_aug2026 {
-  max_cache_age: "24 hour"
+  max_cache_age: "144 hour"
   sql_trigger:
     SELECT
       CASE
