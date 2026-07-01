@@ -7,8 +7,29 @@ datagroup: yash_test_missing_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "1 hour"
 }
+datagroup: my_scheduled_weekly_start_aug2026 {
+  max_cache_age: "24 hour"
+  sql_trigger:
+    SELECT
+      CASE
+        WHEN CURRENT_TIMESTAMP() < TIMESTAMP '2026-08-02 08:00:00 UTC'
+        THEN -1 -- Returns -1 before the start date
 
-persist_with: yash_test_missing_default_datagroup
+    ELSE
+    CAST(
+    FLOOR(
+    (
+    EXTRACT(EPOCH FROM CURRENT_TIMESTAMP() AT TIME ZONE 'UTC')
+    - EXTRACT(EPOCH FROM TIMESTAMP '2026-08-02 08:00:00 UTC')
+    ) / (7 * 24 * 3600)
+    )
+    AS INT)
+    END AS sunday_0800_trigger_count ;;
+  description: "Triggers weekly on Sundays at 08:00 UTC, starting from 2026-08-02."
+}
+
+
+persist_with: my_scheduled_weekly_start_aug2026
 
 explore: commits {
     join: commits__parent {
@@ -86,4 +107,3 @@ explore: table_missing {
 }
 
 explore: licenses {}
-
